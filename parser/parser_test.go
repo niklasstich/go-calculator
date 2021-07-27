@@ -152,7 +152,7 @@ func TestParser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
-			got, err := ReformToBNF(tt.input)
+			got, err := ReformToRPN(tt.input)
 
 			//errors
 			if tt.err == nil && err != nil {
