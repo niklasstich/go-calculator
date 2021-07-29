@@ -3,67 +3,31 @@ package parser
 import (
 	"errors"
 	"fmt"
+	"github.com/niklasstich/calculator/util"
 )
-
-type tokenStack struct {
-	top *tokenWrapper
-}
-
-type tokenWrapper struct {
-	prev *tokenWrapper
-	Token
-}
-
-func (stack *tokenStack) Push(t Token) {
-	wrap := tokenWrapper{
-		prev:  stack.top,
-		Token: t,
-	}
-	stack.top = &wrap
-}
-
-func (stack *tokenStack) Peek() *Token {
-	if stack.top == nil {
-		return nil
-	}
-	return &stack.top.Token
-}
-
-func (stack *tokenStack) Pop() (t *Token) {
-	if stack.top == nil {
-		return nil
-	}
-	t = &stack.top.Token
-	stack.top = stack.top.prev
-	return
-}
-
-func (stack *tokenStack) HasElements() bool {
-	return stack.top != nil
-}
 
 var ErrUnmatchedParenthesis = errors.New("there were unmatched parenthesis in the expression")
 
 // ReformToRPN uses the Shunting-yard algorithm by Dijkstra to convert a tokenized infix expression to RPN
-func ReformToRPN(expression []Token) (bnf []Token, err error) {
-	bnf = make([]Token, 0, len(expression))
-	opStack := tokenStack{}
+func ReformToRPN(expression []util.Token) (bnf []util.Token, err error) {
+	bnf = make([]util.Token, 0, len(expression))
+	opStack := util.TokenStack{}
 	for _, t := range expression {
-		if t.TokenType == TokenTypeOperand {
+		if t.TokenType == util.TokenTypeOperand {
 			//we can just push all operands straight to the output
 			bnf = append(bnf, t)
 		} else {
 			o2 := opStack.Peek()
 			switch t.TokenOperator.Op {
-			case OpLeftBracket:
+			case util.OpLeftBracket:
 				{
 					opStack.Push(t)
 				}
-			case OpRightBracket:
+			case util.OpRightBracket:
 				{
 					for {
 						//if o2 is a left bracket, discard both brackets
-						if o2.TokenOperator.Op == OpLeftBracket {
+						if o2.TokenOperator.Op == util.OpLeftBracket {
 							opStack.Pop()
 							break
 						} else {

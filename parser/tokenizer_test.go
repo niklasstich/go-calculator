@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 	"fmt"
+	"github.com/niklasstich/calculator/util"
 	"reflect"
 	"testing"
 )
@@ -12,39 +13,39 @@ func TestTokenizer(t *testing.T) {
 	var tests = []struct {
 		input string
 		err   error
-		want  []Token
+		want  []util.Token
 	}{
-		{"", nil, []Token{}},
+		{"", nil, []util.Token{}},
 
-		{"123", nil, []Token{{
-			TokenType:    TokenTypeOperand,
+		{"123", nil, []util.Token{{
+			TokenType:    util.TokenTypeOperand,
 			TokenOperand: 123,
 		}}},
 
-		{"777.7742", nil, []Token{{
-			TokenType:    TokenTypeOperand,
+		{"777.7742", nil, []util.Token{{
+			TokenType:    util.TokenTypeOperand,
 			TokenOperand: 777.7742,
 		}}},
 
-		{"456 789 123.456", nil, []Token{
+		{"456 789 123.456", nil, []util.Token{
 			{
-				TokenType:    TokenTypeOperand,
+				TokenType:    util.TokenTypeOperand,
 				TokenOperand: 456,
 			},
 			{
-				TokenType:    TokenTypeOperand,
+				TokenType:    util.TokenTypeOperand,
 				TokenOperand: 789,
 			},
 			{
-				TokenType:    TokenTypeOperand,
+				TokenType:    util.TokenTypeOperand,
 				TokenOperand: 123.456,
 			},
 		}},
 
-		{"+", nil, []Token{{
-			TokenType: TokenTypeOperator,
-			TokenOperator: &Operator{
-				Op:              OpAddition,
+		{"+", nil, []util.Token{{
+			TokenType: util.TokenTypeOperator,
+			TokenOperator: &util.Operator{
+				Op:              util.OpAddition,
 				Char:            '+',
 				Precedence:      1,
 				LeftAssociative: true,
@@ -52,11 +53,11 @@ func TestTokenizer(t *testing.T) {
 			},
 		}}},
 
-		{"+ - (456.789 * 123) / ^ !", nil, []Token{
+		{"+ - (456.789 * 123) / ^ !", nil, []util.Token{
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpAddition,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpAddition,
 					Char:            '+',
 					Precedence:      1,
 					LeftAssociative: true,
@@ -64,9 +65,9 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpSubtraction,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpSubtraction,
 					Char:            '-',
 					Precedence:      1,
 					LeftAssociative: true,
@@ -74,9 +75,9 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpLeftBracket,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpLeftBracket,
 					Char:            '(',
 					Precedence:      5,
 					LeftAssociative: false,
@@ -84,13 +85,13 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType:    TokenTypeOperand,
+				TokenType:    util.TokenTypeOperand,
 				TokenOperand: 456.789,
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpMultiplication,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpMultiplication,
 					Char:            '*',
 					Precedence:      2,
 					LeftAssociative: true,
@@ -98,13 +99,13 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType:    TokenTypeOperand,
+				TokenType:    util.TokenTypeOperand,
 				TokenOperand: 123,
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpRightBracket,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpRightBracket,
 					Char:            ')',
 					Precedence:      5,
 					LeftAssociative: false,
@@ -112,9 +113,9 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpDivision,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpDivision,
 					Char:            '/',
 					Precedence:      2,
 					LeftAssociative: true,
@@ -122,9 +123,9 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpExponentiation,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpExponentiation,
 					Char:            '^',
 					Precedence:      3,
 					LeftAssociative: false,
@@ -132,9 +133,9 @@ func TestTokenizer(t *testing.T) {
 				},
 			},
 			{
-				TokenType: TokenTypeOperator,
-				TokenOperator: &Operator{
-					Op:              OpFactorial,
+				TokenType: util.TokenTypeOperator,
+				TokenOperator: &util.Operator{
+					Op:              util.OpFactorial,
 					Char:            '!',
 					Precedence:      4,
 					LeftAssociative: true,
@@ -143,13 +144,13 @@ func TestTokenizer(t *testing.T) {
 			},
 		}},
 
-		{"@", fmt.Errorf("%w: %c at pos %d", ErrInvalidToken, '@', 0), []Token{}},
+		{"@", fmt.Errorf("%w: %c at pos %d", ErrInvalidToken, '@', 0), []util.Token{}},
 
 		{"2..", errors.New("found malformed expression while cleaning up: strconv.ParseFloat: parsing " +
-			"\"2..\": invalid syntax"), []Token{}},
+			"\"2..\": invalid syntax"), []util.Token{}},
 
 		{"2.. 4 7 3", errors.New("malformed expression near ' ': strconv.ParseFloat: parsing " +
-			"\"2..\": invalid syntax"), []Token{}},
+			"\"2..\": invalid syntax"), []util.Token{}},
 	}
 
 	for i, tt := range tests {

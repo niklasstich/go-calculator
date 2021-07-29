@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/niklasstich/calculator/util"
 	"reflect"
 	"testing"
 )
@@ -9,21 +10,21 @@ import (
 func TestParser(t *testing.T) {
 	var tests = []struct {
 		testName string
-		input    []Token
+		input    []util.Token
 		err      error
-		want     []Token
+		want     []util.Token
 	}{
 		{
 			"2+4",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -31,24 +32,24 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 			},
 			nil,
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -59,15 +60,15 @@ func TestParser(t *testing.T) {
 		},
 		{
 			"2+4*3",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -75,13 +76,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -89,28 +90,28 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3,
 				},
 			},
 			nil,
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -118,9 +119,9 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -131,15 +132,15 @@ func TestParser(t *testing.T) {
 		},
 		{
 			"2*4*4+3",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -147,13 +148,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -161,13 +162,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -175,24 +176,24 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3,
 				},
 			},
 			nil,
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -200,13 +201,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -214,13 +215,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -232,15 +233,15 @@ func TestParser(t *testing.T) {
 
 		{
 			"2*(4+3.7)",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -248,9 +249,9 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpLeftBracket,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpLeftBracket,
 						Char:            '(',
 						Precedence:      5,
 						LeftAssociative: false,
@@ -258,13 +259,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -272,13 +273,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3.7,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpRightBracket,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpRightBracket,
 						Char:            ')',
 						Precedence:      5,
 						LeftAssociative: false,
@@ -287,23 +288,23 @@ func TestParser(t *testing.T) {
 				},
 			},
 			nil,
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 3.7,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -311,9 +312,9 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpMultiplication,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpMultiplication,
 						Char:            '*',
 						Precedence:      2,
 						LeftAssociative: true,
@@ -325,11 +326,11 @@ func TestParser(t *testing.T) {
 
 		{
 			"(2+4",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpLeftBracket,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpLeftBracket,
 						Char:            '(',
 						Precedence:      5,
 						LeftAssociative: false,
@@ -337,13 +338,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -351,7 +352,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 			},
@@ -360,15 +361,15 @@ func TestParser(t *testing.T) {
 		},
 		{
 			"2+4)",
-			[]Token{
+			[]util.Token{
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 2,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpAddition,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpAddition,
 						Char:            '+',
 						Precedence:      1,
 						LeftAssociative: true,
@@ -376,13 +377,13 @@ func TestParser(t *testing.T) {
 					},
 				},
 				{
-					TokenType:    TokenTypeOperand,
+					TokenType:    util.TokenTypeOperand,
 					TokenOperand: 4,
 				},
 				{
-					TokenType: TokenTypeOperator,
-					TokenOperator: &Operator{
-						Op:              OpRightBracket,
+					TokenType: util.TokenTypeOperator,
+					TokenOperator: &util.Operator{
+						Op:              util.OpRightBracket,
 						Char:            ')',
 						Precedence:      5,
 						LeftAssociative: false,
