@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -54,7 +55,180 @@ func TestParser(t *testing.T) {
 						Bracket:         false,
 					},
 				},
-			}},
+			},
+		},
+		{
+			"2+4*3",
+			[]Token{
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 3,
+				},
+			},
+			nil,
+			[]Token{
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 3,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+			},
+		},
+		{
+			"2*4*4+3",
+			[]Token{
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 3,
+				},
+			},
+			nil,
+			[]Token{
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpMultiplication,
+						Char:            '*',
+						Precedence:      2,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 3,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+			},
+		},
 
 		{
 			"2*(4+3.7)",
@@ -148,10 +322,82 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+
+		{
+			"(2+4",
+			[]Token{
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpLeftBracket,
+						Char:            '(',
+						Precedence:      5,
+						LeftAssociative: false,
+						Bracket:         true,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+			},
+			fmt.Errorf("%v: Missing right bracket", ErrUnmatchedParenthesis),
+			nil,
+		},
+		{
+			"2+4)",
+			[]Token{
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 2,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpAddition,
+						Char:            '+',
+						Precedence:      1,
+						LeftAssociative: true,
+						Bracket:         false,
+					},
+				},
+				{
+					TokenType:    TokenTypeOperand,
+					TokenOperand: 4,
+				},
+				{
+					TokenType: TokenTypeOperator,
+					TokenOperator: &Operator{
+						Op:              OpRightBracket,
+						Char:            ')',
+						Precedence:      5,
+						LeftAssociative: false,
+						Bracket:         true,
+					},
+				},
+			},
+			fmt.Errorf("%v: Missing left bracket", ErrUnmatchedParenthesis),
+			nil,
+		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.testName, func(t *testing.T) {
+	for i, tt := range tests {
+		testname := fmt.Sprintf("%d: %s", i+1, tt.testName)
+		t.Run(testname, func(t *testing.T) {
 			got, err := ReformToRPN(tt.input)
 
 			//errors
@@ -180,6 +426,52 @@ func TestParser(t *testing.T) {
 				if !reflect.DeepEqual(got.TokenOperator, w.TokenOperator) {
 					t.Errorf("i=%d:Expected TokenOperator %v, got %v", i, w.TokenOperator, got.TokenOperator)
 				}
+			}
+		})
+	}
+}
+
+func TestTokenizerIntoParser(t *testing.T) {
+	var tests = []struct {
+		input, want string
+		err1, err2  error
+	}{
+		{
+			"3+4*2/(1-5)^2^3",
+			"[3 4 2 * 1 5 - 2 3 ^ ^ / +]",
+			nil, nil,
+		},
+		//TODO: some more cases here, longer and more complex inputs
+	}
+
+	for i, tt := range tests {
+		testname := fmt.Sprintf("%d: %s", i+1, tt.input)
+		t.Run(testname, func(t *testing.T) {
+			tokens, err := TokenizeString(tt.input)
+			if err == nil && tt.err1 != nil {
+				t.Errorf("Unexpected error, expected nil %v", err)
+			}
+			if err != nil && tt.err1 == nil {
+				t.Errorf("Expected error %v, got nil", err)
+			}
+			if tt.err1 != nil && err != nil && tt.err1.Error() != err.Error() {
+				t.Errorf("Expected error %v, got %v", tt.err1, err)
+			}
+
+			tokens, err = ReformToRPN(tokens)
+			if err == nil && tt.err2 != nil {
+				t.Errorf("Unexpected error, expected nil %v", err)
+			}
+			if err != nil && tt.err2 == nil {
+				t.Errorf("Expected error %v, got nil", err)
+			}
+			if tt.err2 != nil && err != nil && tt.err2.Error() != err.Error() {
+				t.Errorf("Expected error %v, got %v", tt.err2, err)
+			}
+
+			got := fmt.Sprint(tokens)
+			if got != tt.want {
+				t.Errorf("Wanted %s, got %s", tt.want, got)
 			}
 		})
 	}

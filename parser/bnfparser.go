@@ -42,15 +42,6 @@ func (stack *tokenStack) HasElements() bool {
 	return stack.top != nil
 }
 
-func (stack *tokenStack) Count() (i int) {
-	p := stack.top
-	for p != nil {
-		p = p.prev
-		i++
-	}
-	return
-}
-
 var ErrUnmatchedParenthesis = errors.New("there were unmatched parenthesis in the expression")
 
 // ReformToRPN uses the Shunting-yard algorithm by Dijkstra to convert a tokenized infix expression to RPN
