@@ -8,14 +8,16 @@ import (
 
 var ErrUnmatchedParenthesis = errors.New("there were unmatched parenthesis in the expression")
 
+type RPNExpression []util.Token
+
 // ReformToRPN uses the Shunting-yard algorithm by Dijkstra to convert a tokenized infix expression to RPN
-func ReformToRPN(expression []util.Token) (bnf []util.Token, err error) {
-	bnf = make([]util.Token, 0, len(expression))
+func ReformToRPN(expression []util.Token) (rpn RPNExpression, err error) {
+	rpn = make([]util.Token, 0, len(expression))
 	opStack := util.TokenStack{}
 	for _, t := range expression {
 		if t.TokenType == util.TokenTypeOperand {
 			//we can just push all operands straight to the output
-			bnf = append(bnf, t)
+			rpn = append(rpn, t)
 		} else {
 			o2 := opStack.Peek()
 			switch t.TokenOperator.Op {
@@ -36,7 +38,7 @@ func ReformToRPN(expression []util.Token) (bnf []util.Token, err error) {
 							if !opStack.HasElements() {
 								return nil, fmt.Errorf("%v: Missing left bracket", ErrUnmatchedParenthesis)
 							}
-							bnf = append(bnf, *o2)
+							rpn = append(rpn, *o2)
 							o2 = opStack.Peek()
 						}
 					}
@@ -50,7 +52,7 @@ func ReformToRPN(expression []util.Token) (bnf []util.Token, err error) {
 							//they have the same precedence and are left associative
 							(o2.TokenOperator.Precedence == t.TokenOperator.Precedence && o2.TokenOperator.LeftAssociative)) {
 						opStack.Pop()
-						bnf = append(bnf, *o2)
+						rpn = append(rpn, *o2)
 						o2 = opStack.Peek()
 					}
 					opStack.Push(t)
@@ -65,7 +67,7 @@ func ReformToRPN(expression []util.Token) (bnf []util.Token, err error) {
 		if op.TokenOperator.Bracket {
 			return nil, fmt.Errorf("%v: Missing right bracket", ErrUnmatchedParenthesis)
 		}
-		bnf = append(bnf, *op)
+		rpn = append(rpn, *op)
 	}
 	return
 }

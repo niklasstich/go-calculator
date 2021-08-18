@@ -94,7 +94,7 @@ func TokenizeString(input string) (tokens []util.Token, err error) {
 				})
 				numbuf = ""
 			}
-			if c == ' ' {
+			if c == ' ' || c == '\n' {
 				continue
 			}
 			operator := opLookUp[c]
